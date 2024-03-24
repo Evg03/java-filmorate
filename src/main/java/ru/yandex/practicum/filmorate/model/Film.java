@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 import ru.yandex.practicum.filmorate.controller.group.CreateGroup;
 import ru.yandex.practicum.filmorate.controller.group.UpdateGroup;
 import ru.yandex.practicum.filmorate.controller.validator.After;
@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.controller.validator.After;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 
-@Value
+@Data
 @Builder(toBuilder = true)
 public class Film {
     @Null(groups = {CreateGroup.class}, message = "id должен быть null")

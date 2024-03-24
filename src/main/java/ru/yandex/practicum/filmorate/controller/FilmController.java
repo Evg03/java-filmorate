@@ -24,26 +24,26 @@ public class FilmController {
 
     @GetMapping()
     public List<Film> getFilms() {
-        log.info("Количество фильмов = " + films.size());
+        log.info("Количество фильмов = {}", films.size());
         return new ArrayList<>(films.values());
     }
 
     @PostMapping()
     public Film addFilm(@Validated(CreateGroup.class) @RequestBody Film film) {
-        Film newFilm = film.toBuilder().id(idCounter++).build();
-        films.put(newFilm.getId(), newFilm);
-        log.info("Фильм с id = " + newFilm.getId() + " добавлен");
-        return newFilm;
+        film.setId(idCounter++);
+        films.put(film.getId(), film);
+        log.info("Фильм с id = {} добавлен", film.getId());
+        return film;
     }
 
     @PutMapping()
     public Film updateFilm(@Validated(UpdateGroup.class) @RequestBody Film film) {
         if (films.get(film.getId()) == null) {
-            log.warn("Фильм с id = " + film.getId() + " не существует");
+            log.warn("Фильм с id = {} не существует", film.getId());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Фильм с id = " + film.getId() + " не существует");
         }
         films.put(film.getId(), film);
-        log.info("Фильм с id = " + film.getId() + " обновлён");
+        log.info("Фильм с id = {} обновлён", film.getId());
         return film;
     }
 }

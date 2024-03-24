@@ -1,16 +1,16 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 import ru.yandex.practicum.filmorate.controller.group.CreateGroup;
-import ru.yandex.practicum.filmorate.controller.validator.HasNoWhiteSpaces;
 import ru.yandex.practicum.filmorate.controller.group.UpdateGroup;
+import ru.yandex.practicum.filmorate.controller.validator.HasNoWhiteSpaces;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 
-@Value
-@Builder(toBuilder = true)
+@Data
+@Builder (toBuilder = true)
 public class User {
     @Null(groups = {CreateGroup.class}, message = "id должен быть null")
     @NotNull(groups = {UpdateGroup.class}, message = "id не должен быть null")

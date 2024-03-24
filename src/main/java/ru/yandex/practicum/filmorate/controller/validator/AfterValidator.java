@@ -10,6 +10,7 @@ public class AfterValidator implements ConstraintValidator<After, LocalDate> {
     private int month;
     private int year;
     private boolean include;
+    private LocalDate specifiedLocalDate;
 
     @Override
     public void initialize(After parameters) {
@@ -18,11 +19,11 @@ public class AfterValidator implements ConstraintValidator<After, LocalDate> {
         year = parameters.year();
         include = parameters.include();
         validateParameters();
+        specifiedLocalDate = LocalDate.of(year, month, day);
     }
 
     @Override
     public boolean isValid(LocalDate localDate, ConstraintValidatorContext constraintValidatorContext) {
-        LocalDate specifiedLocalDate = LocalDate.of(year, month, day);
         if (localDate == null) return true;
         if (include) {
             return localDate.isEqual(specifiedLocalDate) || localDate.isAfter(specifiedLocalDate);
