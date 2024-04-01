@@ -8,9 +8,10 @@ import ru.yandex.practicum.filmorate.controller.validator.HasNoWhiteSpaces;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
-@Builder (toBuilder = true)
+@Builder(toBuilder = true)
 public class User {
     @Null(groups = {CreateGroup.class}, message = "id должен быть null")
     @NotNull(groups = {UpdateGroup.class}, message = "id не должен быть null")
@@ -26,4 +27,15 @@ public class User {
     @NotNull(groups = {CreateGroup.class, UpdateGroup.class}, message = "Дата рождения не должна быть null")
     @PastOrPresent(groups = {CreateGroup.class, UpdateGroup.class}, message = "Дата рождения не может быть из будущего")
     LocalDate birthday;
+    Set<Integer> friends;
+
+    public void addFriend(int userId) {
+        this.friends.add(userId);
+    }
+
+    public void deleteFriend(int userId) {
+        this.friends.remove(userId);
+    }
 }
+
+
