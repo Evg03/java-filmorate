@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -88,12 +89,14 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getMostPopularFilms(int count) {
+        if (count < 1) {
+            throw new IncorrectParameterException("Параметр \"count\" должен быть положительным");
+        }
         List<Film> mostPopularFilms = filmStorage.getFilms().stream()
-                .sorted(Comparator.comparingInt(o -> ((Film)o).getLikes().size()).reversed())
+                .sorted(Comparator.comparingInt(o -> -((Film) o).getLikes().size()))
                 .limit(count)
                 .collect(Collectors.toList());
         log.info("Количество самых популярных фильмов = {}", mostPopularFilms.size());
         return mostPopularFilms;
-
     }
 }

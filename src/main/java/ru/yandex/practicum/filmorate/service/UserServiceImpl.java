@@ -82,11 +82,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User removeFromFriendList(int removesId, int removedId) {
         User removes = userStorage.getUser(removesId);
-        User removed = userStorage.getUser(removedId);
         if (removes == null) {
             log.warn("Пользователя с id = {} не существует", removesId);
             throw new UserNotFoundException("Пользователя с id = " + removesId + " не существует");
         }
+        User removed = userStorage.getUser(removedId);
         if (removed == null) {
             log.warn("Пользователя с id = {} не существует", removedId);
             throw new UserNotFoundException("Пользователя с id = " + removedId + " не существует");
@@ -121,19 +121,10 @@ public class UserServiceImpl implements UserService {
             log.warn("Пользователя с id = {} не существует", userId2);
             throw new UserNotFoundException("Пользователя с id = " + userId2 + " не существует");
         }
-        Set<User> commonFriends = new HashSet<>();
         Set<Integer> friendList1 = user1.getFriends();
         Set<Integer> friendList2 = user2.getFriends();
-        for (Integer id : friendList1) {
-            if (friendList2.contains(id)) {
-                commonFriends.add(userStorage.getUser(id));
-            }
-        }
-        for (Integer id : friendList2) {
-            if (friendList1.contains(id)) {
-                commonFriends.add(userStorage.getUser(id));
-            }
-        }
+        friendList1.retainAll(friendList2);
+        List<User> commonFriends = friendList1.stream().map(id -> userStorage.getUser(id)).collect(Collectors.toList());
         log.info("Количество общих друзей у пользователей с id = {} и {} : {}", userId1, userId2, commonFriends.size());
         return new ArrayList<>(commonFriends);
     }
