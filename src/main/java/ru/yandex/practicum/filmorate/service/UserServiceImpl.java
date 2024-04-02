@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
             log.warn("Пользователя с id = {} не существует", userId2);
             throw new UserNotFoundException("Пользователя с id = " + userId2 + " не существует");
         }
-        Set<Integer> friendList1 = user1.getFriends();
+        Set<Integer> friendList1 = new HashSet<>(user1.getFriends());
         Set<Integer> friendList2 = user2.getFriends();
         friendList1.retainAll(friendList2);
         List<User> commonFriends = friendList1.stream().map(id -> userStorage.getUser(id)).collect(Collectors.toList());
