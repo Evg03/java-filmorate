@@ -1,59 +1,57 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.controller.group.CreateGroup;
 import ru.yandex.practicum.filmorate.controller.group.UpdateGroup;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
 
-    Map<Integer, User> users = new HashMap<>();
-    int idCounter = 1;
+    UserService userService;
 
     @GetMapping()
     public List<User> getUsers() {
-        log.info("Количество пользователей = {}", users.size());
-        return new ArrayList<>(users.values());
+        return userService.getUsers();
     }
 
     @PostMapping()
     public User addUser(@Validated(CreateGroup.class) @RequestBody User user) {
-        user.setId(idCounter++);
-        String name = user.getName();
-        if (name == null || name.isBlank()) {
-            log.info("У пользователя не задано имя, вместо имени будет использоваться логин = {}", user.getLogin());
-            user.setName(user.getLogin());
-        }
-        users.put(user.getId(), user);
-        log.info("Пользователь с id = {} добавлен", user.getId());
-        return user;
+        return userService.addUser(user);
     }
 
     @PutMapping()
     public User updateUser(@Validated(UpdateGroup.class) @RequestBody User user) {
-        if (users.get(user.getId()) == null) {
-            log.warn("Пользователя с id = {} не существует", user.getId());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id = " + user.getId() + " не существует");
-        }
-        String name = user.getName();
-        if (name == null || name.isBlank()) {
-            log.info("У пользователя не задано имя, вместо имени будет использоваться логин = {}", user.getLogin());
-            user.setName(user.getLogin());
-        }
-        users.put(user.getId(), user);
-        log.info("Пользователь с id = {} обновлён", user.getId());
-        return user;
+        return userService.updateUser(user);
     }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addToFriendList(@PathVariable int id, @PathVariable int friendId) {
+        return userService.addToFriendList(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User removeFromFriendList(@PathVariable int id, @PathVariable int friendId) {
+        return userService.removeFromFriendList(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getFriends(@PathVariable int id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.getCommonFriends(id, otherId);
+    }
+
 }

@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.controller.validator.After;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
@@ -26,4 +27,13 @@ public class Film {
     @NotNull(groups = {CreateGroup.class, UpdateGroup.class}, message = "Продолжительность не должна быть null")
     @Positive(groups = {CreateGroup.class, UpdateGroup.class}, message = "Продолжительность должна быть больше 0")
     Integer duration;
+    Set<Integer> likes;
+
+    public void addLike(int userId) {
+        likes.add(userId);
+    }
+
+    public void deleteLike(int userId) {
+        likes.remove(userId);
+    }
 }
