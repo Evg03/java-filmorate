@@ -2,15 +2,18 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 import ru.yandex.practicum.filmorate.controller.group.CreateGroup;
 import ru.yandex.practicum.filmorate.controller.group.UpdateGroup;
 import ru.yandex.practicum.filmorate.controller.validator.HasNoWhiteSpaces;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Jacksonized
 @Builder(toBuilder = true)
 public class User {
     @Null(groups = {CreateGroup.class}, message = "id должен быть null")
@@ -27,7 +30,8 @@ public class User {
     @NotNull(groups = {CreateGroup.class, UpdateGroup.class}, message = "Дата рождения не должна быть null")
     @PastOrPresent(groups = {CreateGroup.class, UpdateGroup.class}, message = "Дата рождения не может быть из будущего")
     LocalDate birthday;
-    Set<Integer> friends;
+    @Builder.Default
+    Set<Integer> friends = new HashSet<>();
 
     public void addFriend(int userId) {
         this.friends.add(userId);

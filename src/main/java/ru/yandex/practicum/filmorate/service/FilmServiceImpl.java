@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
@@ -10,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -20,14 +23,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmServiceImpl implements FilmService {
 
+    @Autowired
+    @Qualifier("filmDbStorage")
     FilmStorage filmStorage;
+    @Autowired
+    @Qualifier("userDbStorage")
     UserStorage userStorage;
 
     @Override
     public Film addFilm(Film film) {
-        if (film.getLikes() == null) {
-            film.setLikes(new HashSet<>());
-        }
+//        if (film.getLikes() == null) {
+//            film.setLikes(new HashSet<>());
+//        }
+//        if (film.getGenres() == null) {
+//            film.setGenres(new HashSet<>());
+//        }
         filmStorage.addFilm(film);
         log.info("Фильм с id = {} добавлен", film.getId());
         return film;
@@ -39,9 +49,9 @@ public class FilmServiceImpl implements FilmService {
             log.warn("Фильм с id = {} не существует", film.getId());
             throw new FilmNotFoundException("Фильм с id = " + film.getId() + " не существует");
         }
-        if (film.getLikes() == null) {
-            film.setLikes(new HashSet<>());
-        }
+//        if (film.getLikes() == null) {
+//            film.setLikes(new HashSet<>());
+//        }
         filmStorage.updateFilm(film);
         log.info("Фильм с id = {} обновлён", film.getId());
         return film;

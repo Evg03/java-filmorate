@@ -24,6 +24,11 @@ public class UserController {
         return userService.getUsers();
     }
 
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable int id) {
+        return userService.getUser(id);
+    }
+
     @PostMapping()
     public User addUser(@Validated(CreateGroup.class) @RequestBody User user) {
         return userService.addUser(user);
@@ -31,6 +36,7 @@ public class UserController {
 
     @PutMapping()
     public User updateUser(@Validated(UpdateGroup.class) @RequestBody User user) {
+        System.out.println("user id = " + user.getId());
         return userService.updateUser(user);
     }
 

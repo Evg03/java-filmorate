@@ -27,6 +27,7 @@ public class FilmController {
 
     @PostMapping()
     public Film addFilm(@Validated(CreateGroup.class) @RequestBody Film film) {
+        System.out.println("test");
         return filmService.addFilm(film);
     }
 
