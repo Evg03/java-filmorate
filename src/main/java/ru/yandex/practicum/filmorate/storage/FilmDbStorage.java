@@ -108,7 +108,7 @@ public class FilmDbStorage implements FilmStorage {
         }
         jdbcTemplate.update(deleteLikesSql, film.getId());
         for (Integer userId : film.getLikes()) {
-            jdbcTemplate.update(addLikesSql, film.getId(),userId);
+            jdbcTemplate.update(addLikesSql, film.getId(), userId);
         }
         return getFilm(film.getId());
     }
@@ -125,6 +125,61 @@ public class FilmDbStorage implements FilmStorage {
         }
         film.setId(newId);
         return film;
+    }
+
+    @Override
+    public List<Film> getMostPopularFilms(int count) {
+        String getFilmsSql = "select f.id, " +
+                "f.name, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "f.mpa_id, " +
+                "m.name as mpa_name, " +
+                "count(l.user_id) as likes_count " +
+                "from films as f " +
+                "left join likes as l on l.film_id = f.id " +
+                "join mpa as m on f.mpa_id = m.id " +
+                "group by f.id, m.id " +
+                "order by likes_count desc " +
+                "limit ?";
+        String getGenresSql = "select fg.film_id, " +
+                "fg.genre_id, " +
+                "g.name " +
+                "from (select f.id as film_id, " +
+                "count(l.user_id) as likes_count " +
+                "from films as f " +
+                "left join likes as l on l.film_id = f.id " +
+                "join mpa as m on f.mpa_id = m.id " +
+                "group by f.id, m.id " +
+                "order by likes_count desc " +
+                "limit ?) as s " +
+                "join film_genres as fg on s.film_id = fg.film_id " +
+                "join genres as g on g.id = fg.genre_id";
+        String getLikesSql = "select l.film_id, " +
+                "l.user_id " +
+                "from (select f.id as film_id, " +
+                "count(l.user_id) as likes_count " +
+                "from films as f " +
+                "left join likes as l on l.film_id = f.id " +
+                "join mpa as m on f.mpa_id = m.id " +
+                "group by f.id, m.id " +
+                "order by likes_count desc " +
+                "limit ?) as s " +
+                "join likes as l on s.film_id = l.user_id";
+
+        List<Film> films = jdbcTemplate.query(getFilmsSql, filmRowMapper(), count);
+        List<Map<String, Object>> likesMaps = jdbcTemplate.queryForList(getLikesSql, count);
+        List<Map<String, Object>> genresMaps = jdbcTemplate.queryForList(getGenresSql, count);
+        Map<Integer, Set<Integer>> likesMap = getLikesMap(likesMaps);
+        Map<Integer, Set<Genre>> genresMap = getGenresMap(genresMaps);
+        for (Film film : films) {
+            Set<Integer> likes = likesMap.get(film.getId());
+            Set<Genre> genres = genresMap.get(film.getId());
+            if (likes != null) film.setLikes(likes);
+            if (genres != null) film.setGenres(genres);
+        }
+        return films;
     }
 
     private Map<String, Object> getMap(Film film) {
@@ -184,10 +239,10 @@ public class FilmDbStorage implements FilmStorage {
             Set<Genre> genres = genresMap.get(id);
             if (genres == null) {
                 genres = new HashSet<>();
-                genres.add(new Genre(genreId,genreName));
+                genres.add(new Genre(genreId, genreName));
                 genresMap.put(id, genres);
             } else {
-                genres.add(new Genre(genreId,genreName));
+                genres.add(new Genre(genreId, genreName));
             }
         }
         return genresMap;

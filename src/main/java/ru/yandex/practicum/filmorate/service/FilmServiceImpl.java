@@ -18,9 +18,7 @@ import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -132,10 +130,7 @@ public class FilmServiceImpl implements FilmService {
         if (count < 1) {
             throw new IncorrectParameterException("Параметр \"count\" должен быть положительным");
         }
-        List<Film> mostPopularFilms = filmStorage.getFilms().stream()
-                .sorted(Comparator.comparingInt(o -> -((Film) o).getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        List<Film> mostPopularFilms = filmStorage.getMostPopularFilms(count);
         log.info("Количество самых популярных фильмов = {}", mostPopularFilms.size());
         return mostPopularFilms;
     }

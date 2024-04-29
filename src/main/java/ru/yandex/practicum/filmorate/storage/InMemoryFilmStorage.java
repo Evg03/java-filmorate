@@ -5,10 +5,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -38,5 +36,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setId(idCounter++);
         films.put(film.getId(), film);
         return film;
+    }
+
+    @Override
+    public List<Film> getMostPopularFilms(int count) {
+        return getFilms().stream()
+                .sorted(Comparator.comparingInt(o -> -((Film) o).getLikes().size()))
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }
