@@ -25,6 +25,11 @@ public class FilmController {
         return filmService.getFilms();
     }
 
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable int id) {
+       return filmService.getFilm(id);
+    }
+
     @PostMapping()
     public Film addFilm(@Validated(CreateGroup.class) @RequestBody Film film) {
         return filmService.addFilm(film);

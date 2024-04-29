@@ -6,9 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @RestControllerAdvice
@@ -39,6 +37,42 @@ public class ErrorHandler {
         log.warn("Ошибка. Фильм не найден", e);
         return new ErrorResponse(
                 "Ошибка. Фильм не найден", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleMpaNotFoundException(final MpaNotFoundException e) {
+        log.warn("Ошибка. Mpa не существует", e);
+        return new ErrorResponse(
+                "Ошибка. Mpa не существует", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMpaNotExistException(final MpaNotExistException e) {
+        log.warn("Ошибка. Mpa не существует", e);
+        return new ErrorResponse(
+                "Ошибка. Mpa не существует", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException e) {
+        log.warn("Ошибка. Жанр не существует", e);
+        return new ErrorResponse(
+                "Ошибка. Жанр не существует", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleGenreNotExistException(final GenreNotExistException e) {
+        log.warn("Ошибка. Жанр не существует", e);
+        return new ErrorResponse(
+                "Ошибка. Жанр не существует", e.getMessage()
         );
     }
 

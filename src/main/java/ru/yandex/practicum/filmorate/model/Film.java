@@ -2,15 +2,18 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 import ru.yandex.practicum.filmorate.controller.group.CreateGroup;
 import ru.yandex.practicum.filmorate.controller.group.UpdateGroup;
 import ru.yandex.practicum.filmorate.controller.validator.After;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Jacksonized
 @Builder(toBuilder = true)
 public class Film {
     @Null(groups = {CreateGroup.class}, message = "id должен быть null")
@@ -27,7 +30,11 @@ public class Film {
     @NotNull(groups = {CreateGroup.class, UpdateGroup.class}, message = "Продолжительность не должна быть null")
     @Positive(groups = {CreateGroup.class, UpdateGroup.class}, message = "Продолжительность должна быть больше 0")
     Integer duration;
-    Set<Integer> likes;
+    @Builder.Default
+    Set<Integer> likes = new HashSet<>();
+    @Builder.Default
+    Set<Genre> genres = new HashSet<>();
+    Mpa mpa;
 
     public void addLike(int userId) {
         likes.add(userId);
@@ -35,5 +42,13 @@ public class Film {
 
     public void deleteLike(int userId) {
         likes.remove(userId);
+    }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
+    public void deleteGenre(Genre genre) {
+        genres.remove(genre);
     }
 }

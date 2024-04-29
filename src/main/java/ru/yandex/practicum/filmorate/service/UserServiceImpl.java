@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    @Qualifier("userDbStorage")
     UserStorage userStorage;
 
     @Override
@@ -28,14 +30,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUser(int userId) {
+        User user = userStorage.getUser(userId);
+        if (user == null) {
+            log.warn("Пользователя с id = {} не существует", userId);
+            throw new UserNotFoundException("Пользователя с id = " + userId + " не существует");
+        }
+        return user;
+    }
+
+    @Override
     public User addUser(User user) {
         String name = user.getName();
         if (name == null || name.isBlank()) {
             log.info("У пользователя не задано имя, вместо имени будет использоваться логин = {}", user.getLogin());
             user.setName(user.getLogin());
-        }
-        if (user.getFriends() == null) {
-            user.setFriends(new HashSet<>());
         }
         userStorage.addUser(user);
         log.info("Пользователь с id = {} добавлен", user.getId());
@@ -52,9 +61,6 @@ public class UserServiceImpl implements UserService {
         if (name == null || name.isBlank()) {
             log.info("У пользователя не задано имя, вместо имени будет использоваться логин = {}", user.getLogin());
             user.setName(user.getLogin());
-        }
-        if (user.getFriends() == null) {
-            user.setFriends(new HashSet<>());
         }
         userStorage.updateUser(user);
         log.info("Пользователь с id = {} обновлён", user.getId());
@@ -74,7 +80,7 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("Пользователя с id = " + invitedId + " не существует");
         }
         invites.addFriend(invited.getId());
-        invited.addFriend(invites.getId());
+        userStorage.updateUser(invites);
         log.info("Пользователь с id = {} добавлен в список друзей пользователя с id = {}", invitedId, invitesId);
         return invites;
     }
@@ -92,7 +98,7 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("Пользователя с id = " + removedId + " не существует");
         }
         removes.deleteFriend(removed.getId());
-        removed.deleteFriend(removes.getId());
+        userStorage.updateUser(removes);
         log.info("Пользователь с id = {} удален из списка друзей пользователя с id = {}", removedId, removesId);
         return removes;
     }
